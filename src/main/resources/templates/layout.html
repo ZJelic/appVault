@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="AppVault">AppVault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <script th:src="@{/javascript/functions.js}" defer></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<!-- Header Fragment -->
+<header th:fragment="appHeader" class="bg-blue-600 text-white p-4 flex justify-between items-center">
+    <div>
+        <a th:href="@{/home}" class="text-xl font-bold hover:underline">AppVault</a>
+    </div>
+    <nav class="space-x-4">
+        <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+           th:href="@{/users}" class="text-white hover:underline">Users</a>
+    </nav>
+    <div class="flex items-center space-x-4">
+        <span class="text-white" th:text="${#authentication.name}">Username</span>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="bg-red-500 hover:bg-red-700 px-3 py-1 rounded">Logout</button>
+        </form>
+    </div>
+</header>
+
+<!-- Footer Fragment -->
+<footer th:fragment="appFooter" class="bg-gray-200 text-center py-4 mt-auto">
+    <p class="text-sm text-gray-600">&copy; 2025 AppVault. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

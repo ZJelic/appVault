@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<!-- Include header -->
+<div th:replace="~{layout :: appHeader}"></div>
+
+<main class="flex-grow p-6">
+    <h2 class="text-2xl mb-4">Hello, <span th:text="${#authentication.name}">User</span>!</h2>
+    <p>This is your secured home page.</p>
+</main>
+
+<!-- Include footer -->
+<div th:replace="~{layout :: appFooter}"></div>
+
+</body>
+</html>
