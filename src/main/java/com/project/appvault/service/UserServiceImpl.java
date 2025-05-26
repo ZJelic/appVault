@@ -1,6 +1,8 @@
 package com.project.appvault.service;
 
 import com.project.appvault.entity.User;
+import com.project.appvault.exception.EmailAlreadyExistsException;
+import com.project.appvault.exception.UsernameAlreadyExistsException;
 import com.project.appvault.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -29,6 +31,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveUser(User user) {
+        userRepository.findByUsername(user.getUsername()).ifPresent(existingUser -> {
+            throw new UsernameAlreadyExistsException("Username '" + user.getUsername() + "' is already taken");
+        });
+        userRepository.findByEmail(user.getEmail()).ifPresent(existingUser -> {
+            throw new EmailAlreadyExistsException("Email '" + user.getEmail() + "' is already taken");
+        });
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
