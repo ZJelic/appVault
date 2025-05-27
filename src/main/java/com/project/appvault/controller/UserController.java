@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/users")
@@ -28,29 +29,24 @@ public class UserController {
     }
 
     @PostMapping
-    public String saveUser(@Valid @ModelAttribute User user, BindingResult bindingResult, Model model) {
+    public String saveUser(@Valid @ModelAttribute User user,
+                           BindingResult bindingResult,
+                           Model model,
+                           RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("roles", roleService.getAllRoles());
             return "users/form";
         }
-        try {
-            if (user.getId() != null) {
-                userService.updateUser(user);
-            } else {
-                userService.saveUser(user);
-            }
-            return "redirect:/users";
-        } catch (UsernameAlreadyExistsException e) {
-            model.addAttribute("user", user);
-            model.addAttribute("roles", roleService.getAllRoles());
-            model.addAttribute("usernameExistsError", e.getMessage());
-            return "users/form";
-        } catch (EmailAlreadyExistsException e) {
-            model.addAttribute("user", user);
-            model.addAttribute("roles", roleService.getAllRoles());
-            model.addAttribute("emailExistsError", e.getMessage());
-            return "users/form";
+
+        if (user.getId() != null) {
+            userService.updateUser(user);
+            redirectAttributes.addFlashAttribute("successMessage", "User updated successfully!");
+        } else {
+            userService.saveUser(user);
+            redirectAttributes.addFlashAttribute("successMessage", "User created successfully!");
         }
+
+        return "redirect:/users";
     }
 
     @GetMapping("/get/{id}")
@@ -61,8 +57,9 @@ public class UserController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteUser(@PathVariable Long id) {
+    public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         userService.deleteUser(id);
+        redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully.");
         return "redirect:/users";
     }
 
