@@ -18,6 +18,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @EqualsAndHashCode(of = "id")
 public class User implements UserDetails {
 
@@ -30,18 +31,20 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, max = 100, message = "Password must be at least 6 characters")
+    // validation in UserController
     @Column(nullable = false, length = 100)
     private String password;
 
     @Email(message = "Invalid email format")
-    @Size(max = 100, message = "Email must be less than 100 characters")
-    @Column(length = 100, nullable = false, unique = true)
+    @Size(max = 50, message = "Email must be less than 50 characters")
+    @Column(length = 50, nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
     private boolean enabled = true;
+
+    @ManyToMany(mappedBy = "users")
+    private Set<Project> projects = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

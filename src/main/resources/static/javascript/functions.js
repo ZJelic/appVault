@@ -1,14 +1,20 @@
-function openDeleteConfirmModal(el) {
-    const userId = el.getAttribute("data-user-id");
+function openDeleteConfirmModal(element) {
+    const id = element.getAttribute("data-id");
+    const deleteUrl = element.getAttribute("data-delete-url");
+    const itemName = element.getAttribute("data-item-name") || "this item";
+
     const form = document.getElementById("deleteForm");
-    form.setAttribute("action", `/users/delete/${userId}`);
+    form.setAttribute("action", deleteUrl);
+
+    const message = document.getElementById("deleteModalMessage");
+    message.textContent = `Are you sure you want to delete ${itemName}?`;
+
     document.getElementById("deleteModal").classList.remove("hidden");
 }
 
 function closeDeleteConfirmModal() {
     document.getElementById("deleteModal").classList.add("hidden");
 }
-
 
 // Custom handling validation
 document.addEventListener('DOMContentLoaded', () => {

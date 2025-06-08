@@ -1,8 +1,6 @@
 package com.project.appvault.controller;
 
 import com.project.appvault.entity.User;
-import com.project.appvault.exception.EmailAlreadyExistsException;
-import com.project.appvault.exception.UsernameAlreadyExistsException;
 import com.project.appvault.service.RoleService;
 import com.project.appvault.service.UserService;
 import jakarta.validation.Valid;
@@ -33,6 +31,27 @@ public class UserController {
                            BindingResult bindingResult,
                            Model model,
                            RedirectAttributes redirectAttributes) {
+
+        if (userService.isUsernameTakenByOther(user.getUsername(), user.getId())) {
+            bindingResult.rejectValue("username", "error.user", "Username already exists");
+        }
+
+        if (userService.isEmailTakenByOther(user.getEmail(), user.getId())) {
+            bindingResult.rejectValue("email", "error.user", "Email already exists");
+        }
+
+        if (user.getId() == null) {
+            if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+                bindingResult.rejectValue("password", "error.user", "Password is required");
+            } else if (user.getPassword().length() < 6) {
+                bindingResult.rejectValue("password", "error.user", "Password must be at least 6 characters");
+            }
+        } else if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            if (user.getPassword().length() < 6) {
+                bindingResult.rejectValue("password", "error.user", "Password must be at least 6 characters");
+            }
+        }
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("roles", roleService.getAllRoles());
             return "users/form";
@@ -56,7 +75,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         userService.deleteUser(id);
         redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully.");

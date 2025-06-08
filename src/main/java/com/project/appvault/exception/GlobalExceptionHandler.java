@@ -2,7 +2,6 @@ package com.project.appvault.exception;
 
 import com.project.appvault.entity.User;
 import com.project.appvault.service.RoleService;
-import com.project.appvault.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,4 +28,13 @@ public class GlobalExceptionHandler {
         model.addAttribute("user", new User());
         return "users/form";
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public String handleUserNotFound(UserNotFoundException ex, Model model) {
+        model.addAttribute("userNotFoundError", ex.getMessage());
+        model.addAttribute("roles", roleService.getAllRoles());
+        model.addAttribute("user", new User());
+        return "users/form";
+    }
+
 }

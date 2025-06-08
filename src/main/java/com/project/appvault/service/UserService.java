@@ -15,4 +15,8 @@ public interface UserService {
     void updateUser(User user);
 
     void deleteUser(Long id);
+
+    boolean isUsernameTakenByOther(String username, Long userId);
+
+    boolean isEmailTakenByOther(String email, Long userId);
 }
