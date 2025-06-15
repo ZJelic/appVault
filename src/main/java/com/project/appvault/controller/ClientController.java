@@ -3,6 +3,7 @@ package com.project.appvault.controller;
 import com.project.appvault.entity.Client;
 import com.project.appvault.service.ClientService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +19,7 @@ public class ClientController {
 
     private final ClientService clientService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public String listClients(Model model) {
         model.addAttribute("clients", clientService.getAllClients());

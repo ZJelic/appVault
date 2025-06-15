@@ -3,6 +3,7 @@ package com.project.appvault.service;
 import com.project.appvault.entity.Client;
 import com.project.appvault.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<Client> getAllClients() {
-        return clientRepository.findAll();
+        return clientRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
     }
 
     @Override
