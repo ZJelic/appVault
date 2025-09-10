@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<!-- Include header -->
+<div th:replace="~{layout :: appHeader}"></div>
+
+<main class="flex-grow p-6">
+    <h1 class="text-xl font-semibold text-gray-800 mb-2">Credential Types</h1>
+
+    <!-- Flash message -->
+    <div th:if="${successMessage}" class="mb-4 flex justify-center">
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded max-w-xl w-full text-center shadow-md">
+            <p th:text="${successMessage}"></p>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <a th:href="@{/credentialTypes/new}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
+            Add Credential Type
+        </a>
+    </div>
+
+    <table class="min-w-full border border-gray-300">
+        <thead class="bg-gray-100">
+        <tr>
+            <th class="border border-gray-300 px-4 py-2 text-left">ID</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Name</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="type : ${credentialTypes}" class="hover:bg-gray-50">
+            <td class="border border-gray-300 px-4 py-2" th:text="${type.id}">1</td>
+            <td class="border border-gray-300 px-4 py-2" th:text="${type.name}">Password</td>
+            <td class="border border-gray-300 px-4 py-2">
+                <a th:href="@{/credentialTypes/edit/{id}(id=${type.id})}" class="text-blue-600 hover:underline">Edit</a> |
+                <a href="#"
+                   class="text-red-600 hover:underline"
+                   th:attr="data-id=${type.id}, data-delete-url=@{/credentialTypes/delete/{id}(id=${type.id})}, data-item-name=${type.name}"
+                   onclick="openDeleteConfirmModal(this)">
+                    Delete
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Include delete modal -->
+    <div th:replace="~{layout :: deleteModal}"></div>
+</main>
+
+<!-- Include footer -->
+<div th:replace="~{layout :: appFooter}"></div>
+
+</body>
+</html>
