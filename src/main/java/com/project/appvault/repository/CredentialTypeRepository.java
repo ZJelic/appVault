@@ -6,5 +6,4 @@ import java.util.Optional;
 
 public interface CredentialTypeRepository extends JpaRepository<CredentialType, Long> {
     Optional<CredentialType> findByName(String name);
-    boolean existsByName(String name);
 }

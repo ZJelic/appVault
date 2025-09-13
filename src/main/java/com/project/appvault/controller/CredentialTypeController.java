@@ -1,5 +1,7 @@
 package com.project.appvault.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.appvault.entity.CredentialType;
 import com.project.appvault.service.CredentialTypeService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
+
+import java.util.Map;
 
 @Controller
 @RequestMapping("/credentialTypes")
@@ -44,13 +48,23 @@ public class CredentialTypeController {
     public String saveCredentialType(@Valid @ModelAttribute CredentialType credentialType,
                                      BindingResult bindingResult,
                                      Model model,
-                                     RedirectAttributes redirectAttributes) {
+                                     RedirectAttributes redirectAttributes,
+                                     @RequestParam("schemaJson") String schemaJson) {
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> schemaMap = objectMapper.readValue(schemaJson, new TypeReference<>() {});
+            credentialType.setSchema(schemaMap);
+        } catch (Exception e) {
+            bindingResult.rejectValue("schema", "error.credentialType", "Invalid schema format");
+        }
 
         if (credentialTypeService.isNameTakenByOther(credentialType.getName(), credentialType.getId())) {
             bindingResult.rejectValue("name", "error.credentialType", "Name already exists");
         }
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("credentialType", credentialType);
             return "credentialTypes/form";
         }
 
@@ -79,4 +93,5 @@ public class CredentialTypeController {
         redirectAttributes.addFlashAttribute("successMessage", "Credential type deleted successfully.");
         return "redirect:/credentialTypes";
     }
+
 }

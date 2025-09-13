@@ -27,6 +27,7 @@
         <tr>
             <th class="border border-gray-300 px-4 py-2 text-left">ID</th>
             <th class="border border-gray-300 px-4 py-2 text-left">Name</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Schema</th>
             <th class="border border-gray-300 px-4 py-2 text-left">Actions</th>
         </tr>
         </thead>
@@ -34,6 +35,13 @@
         <tr th:each="type : ${credentialTypes}" class="hover:bg-gray-50">
             <td class="border border-gray-300 px-4 py-2" th:text="${type.id}">1</td>
             <td class="border border-gray-300 px-4 py-2" th:text="${type.name}">Password</td>
+            <td class="border border-gray-300 px-4 py-2">
+                <div th:if="${type.schema != null}">
+                    <div th:each="entry : ${type.schema.entrySet()}"
+                         th:text="${entry.key} + ': ' + ${entry.value}">
+                    </div>
+                </div>
+            </td>
             <td class="border border-gray-300 px-4 py-2">
                 <a th:href="@{/credentialTypes/edit/{id}(id=${type.id})}" class="text-blue-600 hover:underline">Edit</a> |
                 <a href="#"
