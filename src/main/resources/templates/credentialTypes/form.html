@@ -60,7 +60,7 @@
 <!-- Include footer -->
 <div th:replace="~{layout :: appFooter}"></div>
 
-<script>
+<script th:inline="javascript">
     /*<![CDATA[*/
     function addSchemaRow(key = '', value = '') {
         const container = document.getElementById('schemaContainer');

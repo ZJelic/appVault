@@ -22,10 +22,9 @@
         <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
            th:href="@{/projects}" class="text-white hover:underline">Projects</a>
         <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
-           th:href="@{/credential-types}" class="text-white hover:underline">Credential Types</a>
+           th:href="@{/credentialTypes}" class="text-white hover:underline">Credential Types</a>
         <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
            th:href="@{/credentials}" class="text-white hover:underline">Credentials</a>
-        <a th:href="@{/credentials}" class="text-white hover:underline">Credential Manager</a>
     </nav>
     <div class="flex items-center space-x-4">
         <span class="text-white" th:text="${#authentication.name}">Username</span>
