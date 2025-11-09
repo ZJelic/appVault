@@ -36,10 +36,11 @@
             <td class="border border-gray-300 px-4 py-2" th:text="${type.id}">1</td>
             <td class="border border-gray-300 px-4 py-2" th:text="${type.name}">Password</td>
             <td class="border border-gray-300 px-4 py-2">
-                <div th:if="${type.schema != null}">
-                    <div th:each="entry : ${type.schema.entrySet()}"
-                         th:text="${entry.key} + ': ' + ${entry.value}">
-                    </div>
+                <div th:if="${type.schema != null}" class="flex flex-wrap gap-2">
+                    <span th:each="mapItem : ${type.schema}"
+                          th:text="${mapItem.key} + ': ' + ${mapItem.type}"
+                          class="bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm">
+                    </span>
                 </div>
             </td>
             <td class="border border-gray-300 px-4 py-2">

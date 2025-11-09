@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -53,8 +54,8 @@ public class CredentialTypeController {
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> schemaMap = objectMapper.readValue(schemaJson, new TypeReference<>() {});
-            credentialType.setSchema(schemaMap);
+            List<Map<String, Object>> schemaList = objectMapper.readValue(schemaJson, new TypeReference<>() {});
+            credentialType.setSchema(schemaList);
         } catch (Exception e) {
             bindingResult.rejectValue("schema", "error.credentialType", "Invalid schema format");
         }

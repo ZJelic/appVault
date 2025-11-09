@@ -62,26 +62,48 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    function addSchemaRow(key = '', value = '') {
+    function addSchemaRow(key = '', type = '') {
         const container = document.getElementById('schemaContainer');
-
         container.classList.remove('hidden');
 
         const row = document.createElement('div');
         row.className = 'schema-row flex items-center gap-2 w-full flex-wrap';
+
         row.innerHTML = `
-            <input type="text" placeholder="Key"
-                   class="key border border-gray-300 px-2 py-1 rounded flex-1 min-w-0"
-                   value="${key}" />
-            <input type="text" placeholder="Value"
-                   class="value border border-gray-300 px-2 py-1 rounded flex-1 min-w-0"
-                   value="${value}" />
-            <button type="button" onclick="removeSchemaRow(this)"
-                    class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex-shrink-0">
-                Remove
-            </button>
-        `;
+        <input type="text" placeholder="Key"
+               class="key border border-gray-300 px-2 py-1 rounded flex-1 min-w-0"
+               value="${key}" />
+        <select class="value border border-gray-300 px-2 py-1 rounded flex-1 min-w-0">
+            <option value="" disabled class="text-gray-400">Select type</option>
+            <option value="text">Text</option>
+            <option value="password">Password</option>
+            <option value="email">Email</option>
+            <option value="url">URL</option>
+            <option value="number">Number</option>
+            <option value="date">Date</option>
+            <option value="boolean">Boolean</option>
+            <option value="textarea">Textarea</option>
+        </select>
+        <button type="button" onclick="moveRowUp(this)"
+                class="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500 flex-shrink-0">↑</button>
+        <button type="button" onclick="moveRowDown(this)"
+                class="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500 flex-shrink-0">↓</button>
+        <button type="button" onclick="removeSchemaRow(this)"
+                class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex-shrink-0">Remove</button>
+    `;
+
         container.appendChild(row);
+
+        // set default selection to text if no type provided
+        const select = row.querySelector('select');
+        if(type) {
+            select.value = type;
+        } else {
+            select.value = 'text';
+            // insert placeholder as disabled first option
+            const placeholder = select.querySelector('option[value=""]');
+            select.insertBefore(placeholder, select.firstChild);
+        }
     }
 
     function removeSchemaRow(button) {
@@ -94,14 +116,35 @@
         }
     }
 
+    // Move row up
+    function moveRowUp(button) {
+        const row = button.parentNode;
+        const container = document.getElementById('schemaContainer');
+        if (row.previousElementSibling) {
+            container.insertBefore(row, row.previousElementSibling);
+        }
+    }
+
+    // Move row down
+    function moveRowDown(button) {
+        const row = button.parentNode;
+        const container = document.getElementById('schemaContainer');
+        if (row.nextElementSibling) {
+            container.insertBefore(row.nextElementSibling, row);
+        }
+    }
+
     // Prepare JSON before submitting
     function prepareSchemaJson() {
-        const schema = {};
+        const schema = [];
         document.querySelectorAll('#schemaContainer > div').forEach(row => {
             const keyInput = row.querySelector('.key');
             const valueInput = row.querySelector('.value');
             if (keyInput && keyInput.value.trim()) {
-                schema[keyInput.value.trim()] = valueInput.value.trim();
+                schema.push({
+                    key: keyInput.value.trim(),
+                    type: valueInput.value.trim()
+                });
             }
         });
         document.getElementById('schemaJson').value = JSON.stringify(schema);
@@ -109,10 +152,10 @@
 
     // Populate existing schema if editing
     document.addEventListener('DOMContentLoaded', () => {
-        const schemaRaw = /*[[${credentialType.schema}]]*/ {};
+        const schemaRaw = /*[[${credentialType.schema}]]*/ [];
 
-        if (schemaRaw && typeof schemaRaw === 'object' && Object.keys(schemaRaw).length > 0) {
-            Object.keys(schemaRaw).forEach(key => addSchemaRow(key, schemaRaw[key]));
+        if (schemaRaw && Array.isArray(schemaRaw) && schemaRaw.length > 0) {
+            schemaRaw.forEach(item => addSchemaRow(item.key, item.type));
         }
 
         const form = document.getElementById('credentialTypeForm');

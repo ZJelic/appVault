@@ -1,5 +1,6 @@
 package com.project.appvault.entity;
 
+import com.project.appvault.util.ListMapToJsonConverter;
 import com.project.appvault.util.MapToJsonConverter;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,8 +29,8 @@ public class CredentialType {
     @OneToMany(mappedBy = "credentialType", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Credential> credentials;
 
-    @Convert(converter = MapToJsonConverter.class)
+    @Convert(converter = ListMapToJsonConverter.class)
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(nullable = false)
-    private Map<String, Object> schema;
+    private List<Map<String, Object>> schema;
 }
