@@ -1,5 +1,6 @@
 package com.project.appvault.entity;
 
+import com.project.appvault.util.ListMapToJsonConverter;
 import com.project.appvault.util.MapToJsonConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -47,8 +49,8 @@ public class Credential {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Convert(converter = MapToJsonConverter.class)
+    @Convert(converter = ListMapToJsonConverter.class)
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(nullable = false)
-    private Map<String, Object> data;
+    private List<Map<String, Object>> data;
 }

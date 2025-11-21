@@ -3,6 +3,7 @@ package com.project.appvault.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.appvault.entity.Credential;
+import com.project.appvault.entity.CredentialType;
 import com.project.appvault.service.CredentialService;
 import com.project.appvault.service.CredentialTypeService;
 import com.project.appvault.service.ProjectService;
@@ -16,6 +17,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -26,6 +29,7 @@ public class CredentialController {
     private final CredentialService credentialService;
     private final ProjectService projectService;
     private final CredentialTypeService credentialTypeService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
@@ -51,19 +55,29 @@ public class CredentialController {
         return "credentials/form";
     }
 
+    @GetMapping("/type/{id}/schema")
+    @ResponseBody
+    public List<Map<String, Object>> getCredentialTypeSchema(@PathVariable Long id) {
+        CredentialType type = credentialTypeService.getCredentialTypeById(id);
+        return type != null ? type.getSchema() : List.of();
+    }
+
     @PostMapping
     public String saveCredential(@Valid @ModelAttribute Credential credential,
                                  BindingResult bindingResult,
                                  Model model,
                                  RedirectAttributes redirectAttributes,
-                                 @RequestParam("dataJson") String dataJson) {
+                                 @RequestParam(value = "dataJson", required = false) String dataJson) {
 
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> dataMap = objectMapper.readValue(dataJson, new TypeReference<>() {});
-            credential.setData(dataMap);
+            if (dataJson == null || dataJson.trim().isEmpty()) {
+                credential.setData(Collections.emptyList());
+            } else {
+                List<Map<String, Object>> dataList = objectMapper.readValue(dataJson, new TypeReference<>() {});
+                credential.setData(dataList);
+            }
         } catch (Exception e) {
-            bindingResult.rejectValue("data", "error.credential", "Invalid data format");
+            bindingResult.rejectValue("data", "error.credential", "Invalid data format (JSON expected)");
         }
 
         if (credentialService.isNameTakenInProject(
